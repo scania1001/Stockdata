@@ -14,30 +14,30 @@ namespace Stockdata.Model
         public int SID { get; set; }
 
         [Column(TypeName = "date")]
-        public DateTime Sdate { get; set; }
+        public DateTime? Sdate { get; set; }
 
         [Column(TypeName = "date")]
-        public DateTime ExRdate { get; set; }
+        public DateTime? ExRdate { get; set; }
 
         [Column(TypeName = "money")]
-        public decimal ExR { get; set; }
+        public decimal? ExR { get; set; }
 
         [Column(TypeName = "date")]
-        public DateTime ExDdate { get; set; }
+        public DateTime? ExDdate { get; set; }
 
         [Column(TypeName = "money")]
-        public decimal ExD { get; set; }
+        public decimal? ExD { get; set; }
 
         [Column(TypeName = "date")]
         public DateTime? Cashdate { get; set; }
 
         [Column(TypeName = "money")]
-        public decimal CashDividend { get; set; }
+        public decimal? CashDividend { get; set; }
 
         [Column(TypeName = "money")]
-        public decimal StockDividendRE { get; set; }
+        public decimal? StockDividendRE { get; set; }
 
         [Column(TypeName = "money")]
-        public decimal StockDividendCR { get; set; }
+        public decimal? StockDividendCR { get; set; }
     }
 }

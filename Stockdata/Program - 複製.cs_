@@ -1,0 +1,128 @@
+﻿using Stockdata.Model;
+using System;
+using System.Collections.Generic;
+using HtmlAgilityPack;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net;
+using System.IO;
+using System.Collections.Specialized;
+
+namespace Stockdata
+{
+    public class stock
+    {
+        public int SID { get; set; } //股票代碼
+        public DateTime Sdate { get; set; }//年度日期
+        public DateTime ExRdate { get; set; }//除權日期
+        public decimal ExR { get; set; }//除權
+        public DateTime ExDdate { get; set; }//除息日期
+        public decimal ExD { get; set; }//除息
+        public DateTime Cashdate { get; set; }//現金日期
+        public decimal CashDividend { get; set; }//現金股利
+        public decimal StockDividendRE { get; set; }//盈餘配股
+        public decimal StockDividendCR { get; set; }//公積配股
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //Stock data = new Stock();
+            //data.SID = 1;
+            //data.Sdate = Convert.ToDateTime("2015-05-29");
+            //data.ExRdate = Convert.ToDateTime("2015-05-29");
+            //data.ExR = (Decimal)79.5;
+            //data.ExRdate = Convert.ToDateTime("2015-05-29");
+            //data.ExD = (Decimal)80.5;
+            //data.ExDdate= Convert.ToDateTime("2016-05-29");
+            //data.Cashdate = Convert.ToDateTime("2015-05-29");
+            //data.CashDividend = (Decimal)1.5;
+            //data.StockDividendRE = (Decimal)5.5;
+            //data.StockDividendCR = (Decimal)9.5;
+
+            //Model1 model = new Model1();
+            //model.Stock.Add(data);
+            //model.SaveChanges();
+
+            GetStock("2317");
+
+
+        }
+        static void GetStock(string Stockid)
+        {
+            WebClient wc = new WebClient();
+            wc.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+            //var nvc = new NameValueCollection();
+            //nvc["is_check"] = "1";
+            //var buffer = wc.UploadValues(string.Format("http://goodinfo.tw/StockInfo/StockDividendSchedule.asp?STOCK_ID={0}", Stockid), nvc);
+            //var htmlstr = Encoding.UTF8.GetString(buffer);
+            var htmlstr = wc.DownloadString(string.Format("http://goodinfo.tw/StockInfo/StockDividendSchedule.asp?STOCK_ID={0}", Stockid));
+
+            // MemoryStream ms = new MemoryStream(buffer);
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(htmlstr);
+            //doc.Load(ms, Encoding.UTF8);
+            HtmlDocument hdc = new HtmlDocument();
+            //*[@id="tb_chart"]/tbody/tr[1]/td[1]
+
+            //List<stock> nowStock = new List<stock>();
+            //var table = doc.DocumentNode.SelectNodes("//*[@id='tb_chart']/tr");
+
+            var table = doc.DocumentNode.SelectNodes("//*[@id=\"/^row/\"]");
+                    var list_tr = table.ToList<HtmlNode>().Select(hn =>
+            //var list_tr = table.ToList<HtmlNode>()[0];
+            {   
+                HtmlDocument hdctmp = new HtmlDocument();
+                hdctmp.LoadHtml(hn.InnerHtml);
+                var o = new stock();
+                var toStock = hdctmp.DocumentNode
+                        .SelectNodes("//td")
+                        .Select(hn2 => hn2.InnerText)
+                        .ToArray();
+                o.SID = int.Parse(toStock[0]);
+                o.Sdate = DateTime.Parse(toStock[1]);
+                o.ExDdate = DateTime.Parse(toStock[2]);
+                o.ExR = decimal.Parse(toStock[3]);
+                //o.Volume = Int32.Parse(toStock[5]);
+                //o.AccumulatedVolume = Int32.Parse(toStock[6]);
+                return o;
+            }).ToList();
+           // hdc.LoadHtml(list_tr.InnerHtml);
+            var tds_in_tr = hdc.DocumentNode.SelectNodes("//td");
+            Console.WriteLine();
+            Console.Read();
+
+            var x = list_tr.Count;
+            int v = 0;
+
+            Stock data = new Stock();
+            foreach (var item in list_tr)
+            {
+                data.SID = item.SID;
+                data.Sdate = item.Sdate;
+                data.ExRdate = item.ExRdate;
+                data.ExR = item.ExR;
+                data.ExRdate = item.ExRdate;
+                data.ExD = item.ExD;
+                data.ExDdate = item.ExDdate;
+                data.Cashdate = item.Cashdate;
+                data.CashDividend = item.CashDividend;
+                data.StockDividendRE = item.StockDividendRE;
+                data.StockDividendCR = item.StockDividendCR;
+
+                Model1 model = new Model1();
+                model.Stock.Add(data);
+                model.SaveChanges();
+
+            }
+            
+
+        }
+
+    }
+
+}
+
+
+

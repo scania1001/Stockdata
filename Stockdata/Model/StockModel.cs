@@ -4,13 +4,14 @@ namespace Stockdata.Model
     using System.Data.Entity;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
+    using Stockdata.Model;
 
-    public partial class Model1 : DbContext
+    public partial class StockModel : DbContext
     {
-        public Model1()
-            : base("name=Model1")
+        public StockModel()
+            : base("name=StockModel")
         {
-            Database.SetInitializer<Model1>(null);
+            Database.SetInitializer<StockModel>(null);
         }
 
         public virtual DbSet<Stock> Stock { get; set; }
