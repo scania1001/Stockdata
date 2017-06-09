@@ -1,42 +1,61 @@
 namespace Stockdata.Model
 {
-    using System;
-    using System.Data.Entity;
+    using System;    
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
-    using Stockdata.Model;
+    using Microsoft.EntityFrameworkCore;
+    using System.Configuration;
 
     public partial class StockModel : DbContext
     {
         public StockModel()
-            : base("name=StockModel")
         {
-            Database.SetInitializer<StockModel>(null);
+            //Database.EnsureDeleted();
+            //Database.EnsureCreated();
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionbuilder)
+        {
+            string sConnString = ConfigurationManager.ConnectionStrings["StockModel"].ConnectionString;
+            optionbuilder.UseSqlServer(sConnString);
+        }
         public virtual DbSet<Stock> Stock { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ForSqlServerHasSequence<int>("seq_StockDividendInformation");
+
             modelBuilder.Entity<Stock>()
                 .Property(e => e.ExR)
-                .HasPrecision(19, 4);
+                .HasColumnType("decimal(19, 4)");
+
+
+            modelBuilder.Entity<Stock>()
+                .Property(e => e.ID)
+                .HasDefaultValueSql("NEXT VALUE FOR seq_StockDividendInformation");
 
             modelBuilder.Entity<Stock>()
                 .Property(e => e.ExD)
-                .HasPrecision(19, 4);
+                .HasColumnType("decimal(19, 4)");
 
             modelBuilder.Entity<Stock>()
-                .Property(e => e.CashDividend)
-                .HasPrecision(19, 4);
+                .Property(e => e.CashDividendTotal)
+                .HasColumnType("decimal(19, 4)");
 
             modelBuilder.Entity<Stock>()
-                .Property(e => e.StockDividendRE)
-                .HasPrecision(19, 4);
+                .Property(e => e.StockDividendSurplus)
+                .HasColumnType("decimal(19, 4)");
 
             modelBuilder.Entity<Stock>()
                 .Property(e => e.StockDividendCR)
-                .HasPrecision(19, 4);
+                .HasColumnType("decimal(19, 4)");
+
+            modelBuilder.Entity<Stock>()
+                .Property(e => e.AvgStockPrice)
+                .HasColumnType("decimal(19, 4)");
+            
         }
     }
 }
